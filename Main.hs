@@ -1,4 +1,4 @@
-main = putStrLn . show $ signArray $ map (line 2.0 4.5) xrange
+main = putStrLn . show $ diffArray $ signArray $ map (line 2.0 4.5) xrange
 
 xrange :: [Float]
 xrange = createRange (-15) 0.01 (15)
@@ -24,3 +24,11 @@ sign x
   | x < 0 = (-1)
   | x > 0 = 1
   | otherwise = 0
+
+diffArray :: [Int] -> [Int]
+diffArray [] = []
+diffArray (x:xs) = diffReduce xs x []
+
+diffReduce :: [Int] -> Int -> [Int] -> [Int]
+diffReduce [] _ acc = acc
+diffReduce (x:xs) prev acc = diffReduce xs (x) ((prev - x) : acc)
