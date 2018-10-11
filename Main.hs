@@ -1,10 +1,11 @@
-main = putStrLn . show $ diffArray $ signArray $ map (line 2.0 4.5) xrange
+import Data.List
 
-xrange :: [Float]
-xrange = createRange (-15) 0.01 (15)
-
-line :: Float -> Float -> (Float -> Float)
-line m c = y m c
+main =
+  putStrLn . show $
+  roots xrange $ intersectionIndex $ diffArray $ signArray $ map toY xrange
+  where
+    toY = y 2.0 4.5
+    xrange = createRange (-15) 0.01 (15)
 
 y :: Float -> Float -> Float -> Float
 y m c x = m * x + c
@@ -31,4 +32,14 @@ diffArray (x:xs) = diffReduce xs x []
 
 diffReduce :: [Int] -> Int -> [Int] -> [Int]
 diffReduce [] _ acc = acc
-diffReduce (x:xs) prev acc = diffReduce xs (x) ((prev - x) : acc)
+diffReduce (curr:xs) prev acc = diffReduce xs curr ((prev - curr) : acc)
+
+intersectionIndex :: [Int] -> [Int]
+intersectionIndex xs = findIndices notZero xs
+
+notZero :: Int -> Bool
+notZero x = not (x == 0)
+
+roots :: [Float] -> [Int] -> (Float, Float)
+roots xs [] = error "Could not find the point of intersection"
+roots xs (z:zs) = (xs !! z, xs !! (z + 1))
