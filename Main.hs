@@ -1,45 +1,35 @@
-import Data.List
+import qualified Data.List as List
 
 main =
-  putStrLn . show $
-  roots xrange $ intersectionIndex $ diffArray $ signArray $ map toY xrange
-  where
-    toY = y 2.0 4.5
-    xrange = createRange (-15) 0.01 (15)
+  let toY = y 2.0 4.5
+      xRange = createRange (-15) 15 0.001
+   in putStrLn . show $
+      roots xRange $ indexOfNonZero $ diff $ sign $ map toY xRange
 
 y :: Float -> Float -> Float -> Float
 y m c x = m * x + c
 
 createRange :: Float -> Float -> Float -> [Float]
-createRange start step end = [start,(start + step) .. end]
+createRange start end step = [start,(start + step) .. end]
 
-signArray :: [Float] -> [Int]
-signArray xs = signReduce xs []
+sign :: [Float] -> [Int]
+sign = foldl signEach []
+  where
+    signEach xs x = (signItem x) : xs
+    signItem x
+      | x < 0 = -1
+      | x > 0 = 1
+      | otherwise = 0
 
-signReduce :: [Float] -> [Int] -> [Int]
-signReduce [] acc = acc
-signReduce (x:xs) acc = signReduce xs ((sign x) : acc)
+diff :: [Int] -> [Int]
+diff [] = []
+diff xs = zipWith (-) (tail xs) xs
 
-sign :: Float -> Int
-sign x
-  | x < 0 = (-1)
-  | x > 0 = 1
-  | otherwise = 0
-
-diffArray :: [Int] -> [Int]
-diffArray [] = []
-diffArray (x:xs) = diffReduce xs x []
-
-diffReduce :: [Int] -> Int -> [Int] -> [Int]
-diffReduce [] _ acc = acc
-diffReduce (curr:xs) prev acc = diffReduce xs curr ((prev - curr) : acc)
-
-intersectionIndex :: [Int] -> [Int]
-intersectionIndex xs = findIndices notZero xs
-
-notZero :: Int -> Bool
-notZero x = not (x == 0)
+indexOfNonZero :: [Int] -> [Int]
+indexOfNonZero = List.findIndices (/= 0)
 
 roots :: [Float] -> [Int] -> (Float, Float)
-roots xs [] = error "Could not find the point of intersection"
-roots xs (z:zs) = (xs !! z, xs !! (z + 1))
+roots xs [] = error "Line does not intesect x axis in given range"
+roots xs (i:_) = (xs `at` i, xs `at` (i + 1))
+  where
+    at = (!!)
