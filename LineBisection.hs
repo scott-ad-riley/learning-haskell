@@ -15,10 +15,10 @@ createRange start end step = [start,(start + step) .. end]
 sign :: [Float] -> [Int]
 sign = map signItem
   where
-    signItem x
-      | x < 0 = -1
-      | x > 0 = 1
-      | otherwise = 0
+    signItem x = toNum $ compare x 0
+    toNum LT = -1
+    toNum GT = 1
+    toNum EQ = 0
 
 diff :: [Int] -> [Int]
 diff [] = []
