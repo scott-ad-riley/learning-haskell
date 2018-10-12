@@ -13,9 +13,8 @@ createRange :: Float -> Float -> Float -> [Float]
 createRange start end step = [start,(start + step) .. end]
 
 sign :: [Float] -> [Int]
-sign = foldl signEach []
+sign = map signItem
   where
-    signEach xs x = (signItem x) : xs
     signItem x
       | x < 0 = -1
       | x > 0 = 1
